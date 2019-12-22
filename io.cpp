@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "io.h"
+#include "board.h"
 
 // tokenize an input string
 // "1 [2 3] 4" -> {1, [, 2, 3, ], 4}
@@ -53,4 +54,23 @@ std::vector<std::vector<int>> parse(std::string raw) {
     ii++;
   }
   return parsed;
+}
+
+void print_board(std::vector<std::vector<int>> board) {
+  for (size_t ii = 0; ii < board.size(); ii++) {
+    for (size_t jj = 0; jj < board.size(); jj++) {
+      switch(board[ii][jj]) {
+        case UNKNOWN:
+          std::cout << " ";
+          break;
+        case FALSE:
+          std::cout << "x";
+          break;
+        case TRUE:
+          std::cout << "█";
+          break;
+      }
+    }
+    std::cout << std::endl;
+  }
 }

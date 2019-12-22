@@ -7,5 +7,6 @@
 
 std::vector<std::string> tokenize(std::string raw);
 std::vector<std::vector<int>> parse(std::string input);
+void print_board(std::vector<std::vector<int>> board);
 
 #endif
