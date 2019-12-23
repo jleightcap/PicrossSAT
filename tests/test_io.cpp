@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "io.h"
-#include "board.h"
+#include "solve.h"
 
 TEST(IO, Tokenize) { 
   // these are invalid user strings, just verifies brackets/spaces.
@@ -42,6 +42,7 @@ TEST(IO, Parse) {
   EXPECT_EQ(parse2[2].size(), 3);
 }
 
+/*
 void print_board_redirect(std::vector<std::vector<int>> board, std::string check) {
   std::ostringstream buffer;
   std::streambuf *sbuf = std::cout.rdbuf();
@@ -50,12 +51,15 @@ void print_board_redirect(std::vector<std::vector<int>> board, std::string check
   EXPECT_EQ(buffer.str(), check);
   std::cout.rdbuf(sbuf);
 }
+*/
 
 TEST(IO, Print) {
   std::vector<std::vector<int>> board1 = {{1, 1}, {0, 0}};
-  print_board_redirect(board1, "xx\n  \n");
+  std::string print_board1 = print_board(board1);
+  EXPECT_EQ(print_board1, "xx\n  \n");
   std::vector<std::vector<int>> board2 = {{1,1,1}, {2,2,2}, {0,0,0}};
-  print_board_redirect(board2, "xxx\n███\n   \n");
+  std::string print_board2 = print_board(board2);
+  EXPECT_EQ(print_board2, "xxx\n███\n   \n");
 }
 
 int main(int argc, char* argv[]) {

@@ -14,4 +14,4 @@ test: $(BIN)
 	(cd tests && make test)
 
 clean:
-	rm -f *.o $(BIN) && cd tests && make clean
+	rm -f *.o solution.txt $(BIN) && cd tests && make clean

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <list>
 #include <assert.h>
@@ -23,8 +24,11 @@ int main() {
   std::getline(std::cin, restrict_column);
   assert(restrict_row.size() == restrict_column.size());
   std::vector<std::vector<int>> parsed = parse(restrict_row);
-  Board b(3);
-  b.f();
+  
+  std::string solution = print_board(parsed);
+  std::ofstream file("solution.txt");
+  file << solution;
+  file.close();
   
   return 0;
 }

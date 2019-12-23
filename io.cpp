@@ -55,21 +55,23 @@ std::vector<std::vector<int>> parse(std::string raw) {
   return parsed;
 }
 
-void print_board(std::vector<std::vector<int>> board) {
+std::string print_board(std::vector<std::vector<int>> board) {
+  std::string solution = "";
   for (size_t ii = 0; ii < board.size(); ii++) {
     for (size_t jj = 0; jj < board.size(); jj++) {
       switch(board[ii][jj]) {
         case UNKNOWN:
-          std::cout << " ";
+          solution.append(" ");
           break;
         case FALSE:
-          std::cout << "x";
+          solution.append("x");
           break;
         case TRUE:
-          std::cout << "█";
+          solution.append("█");
           break;
       }
     }
-    std::cout << std::endl;
+    solution.append("\n");
   }
+  return solution;
 }
