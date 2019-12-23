@@ -2,8 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "io.h"
-#include "board.h"
+#include "solve.h"
 
 // tokenize an input string
 // "1 [2 3] 4" -> {1, [, 2, 3, ], 4}

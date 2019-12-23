@@ -42,7 +42,7 @@ TEST(IO, Parse) {
   EXPECT_EQ(parse2[2].size(), 3);
 }
 
-void cout_redirect(std::vector<std::vector<int>> board, std::string check) {
+void print_board_redirect(std::vector<std::vector<int>> board, std::string check) {
   std::ostringstream buffer;
   std::streambuf *sbuf = std::cout.rdbuf();
   std::cout.rdbuf(buffer.rdbuf());
@@ -53,9 +53,9 @@ void cout_redirect(std::vector<std::vector<int>> board, std::string check) {
 
 TEST(IO, Print) {
   std::vector<std::vector<int>> board1 = {{1, 1}, {0, 0}};
-  cout_redirect(board1, "xx\n  \n");
+  print_board_redirect(board1, "xx\n  \n");
   std::vector<std::vector<int>> board2 = {{1,1,1}, {2,2,2}, {0,0,0}};
-  cout_redirect(board2, "xxx\n███\n   \n");
+  print_board_redirect(board2, "xxx\n███\n   \n");
 }
 
 int main(int argc, char* argv[]) {
