@@ -10,17 +10,18 @@ TEST(IO, Tokenize) {
   // these are invalid user strings, just verifies brackets/spaces.
   std::string raw1("[        ]");
   std::vector<std::string> tokens1 = tokenize(raw1);
-  EXPECT_EQ(tokens1[0], "[");
-  EXPECT_EQ(tokens1[1], "]");
+  std::vector<std::string> expected1 = {"[", "]"};
+  ASSERT_EQ(tokens1.size(), expected1.size());
+  for (size_t ii = 0; ii < tokens1.size(); ii++) {
+    EXPECT_EQ(tokens1[ii], expected1[ii]);
+  }
 
   std::string raw2("1 [2 3] 4");
   std::vector<std::string> tokens2 = tokenize(raw2);
-  EXPECT_EQ(tokens2[0], "1");
-  EXPECT_EQ(tokens2[1], "[");
-  EXPECT_EQ(tokens2[2], "2");
-  EXPECT_EQ(tokens2[3], "3");
-  EXPECT_EQ(tokens2[4], "]");
-  EXPECT_EQ(tokens2[5], "4");
+  std::vector<std::string> expected2 = {"1", "[", "2", "3", "]", "4"};
+  for (size_t ii = 0; ii < tokens1.size(); ii++) {
+    EXPECT_EQ(tokens2[ii], expected2[ii]);
+  }
 }
 
 TEST(IO, Parse) {
