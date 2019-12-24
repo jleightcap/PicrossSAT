@@ -8,6 +8,8 @@ class Board {
 
   public:
   Board(int nn);
+  ~Board();
+  std::string render_board();
   void f();
 };
 

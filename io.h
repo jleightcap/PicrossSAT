@@ -5,8 +5,10 @@
 #include <list>
 #include <vector>
 
+#include "solve.h"
+
 std::vector<std::string> tokenize(std::string raw);
 std::vector<std::vector<int>> parse(std::string input);
-std::string print_board(std::vector<std::vector<int>> board);
+std::string board_string(std::vector<std::vector<board_state>> board); 
 
 #endif

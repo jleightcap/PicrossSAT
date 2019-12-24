@@ -55,7 +55,7 @@ std::vector<std::vector<int>> parse(std::string raw) {
   return parsed;
 }
 
-std::string print_board(std::vector<std::vector<int>> board) {
+std::string board_string(std::vector<std::vector<board_state>> board) {
   std::string solution = "";
   for (size_t ii = 0; ii < board.size(); ii++) {
     for (size_t jj = 0; jj < board.size(); jj++) {

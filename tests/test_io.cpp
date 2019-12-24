@@ -54,11 +54,11 @@ void print_board_redirect(std::vector<std::vector<int>> board, std::string check
 */
 
 TEST(IO, Print) {
-  std::vector<std::vector<int>> board1 = {{1, 1}, {0, 0}};
-  std::string print_board1 = print_board(board1);
+  std::vector<std::vector<board_state>> board1 = {{FALSE,FALSE}, {UNKNOWN,UNKNOWN}};
+  std::string print_board1 = board_string(board1);
   EXPECT_EQ(print_board1, "xx\n  \n");
-  std::vector<std::vector<int>> board2 = {{1,1,1}, {2,2,2}, {0,0,0}};
-  std::string print_board2 = print_board(board2);
+  std::vector<std::vector<board_state>> board2 = {{FALSE,FALSE,FALSE}, {TRUE,TRUE,TRUE}, {UNKNOWN,UNKNOWN,UNKNOWN}};
+  std::string print_board2 = board_string(board2);
   EXPECT_EQ(print_board2, "xxx\n███\n   \n");
 }
 
