@@ -43,17 +43,6 @@ TEST(IO, Parse) {
   EXPECT_EQ(parse2[2].size(), 3);
 }
 
-/*
-void print_board_redirect(std::vector<std::vector<int>> board, std::string check) {
-  std::ostringstream buffer;
-  std::streambuf *sbuf = std::cout.rdbuf();
-  std::cout.rdbuf(buffer.rdbuf());
-  print_board(board);
-  EXPECT_EQ(buffer.str(), check);
-  std::cout.rdbuf(sbuf);
-}
-*/
-
 TEST(IO, Print) {
   std::vector<std::vector<board_state>> board1 = {{FALSE,FALSE}, {UNKNOWN,UNKNOWN}};
   std::string print_board1 = board_string(board1);
