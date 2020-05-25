@@ -6,53 +6,61 @@
 #include "io.h"
 #include "sat.h"
 
-TEST(IO, Tokenize) {
-  // these are invalid user strings, just verifies brackets/spaces.
-  std::string raw1("[        ]");
-  std::vector<std::string> tokens1 = tokenize(raw1);
-  std::vector<std::string> expected1 = {"[", "]"};
-  ASSERT_EQ(tokens1.size(), expected1.size());
-  for (size_t ii = 0; ii < tokens1.size(); ii++) {
-    EXPECT_EQ(tokens1[ii], expected1[ii]);
-  }
+TEST(IO, Tokenize)
+{
+    // empty list, tab and space ignored
+    std::string raw1("[        ]");
+    std::vector<std::string> tokens1 = tokenize(raw1);
+    std::vector<std::string> expected1 = {"[", "]"};
+    ASSERT_EQ(tokens1.size(), expected1.size());
+    for (size_t ii = 0; ii < tokens1.size(); ii++)
+        EXPECT_EQ(tokens1[ii], expected1[ii]);
 
-  std::string raw2("1 [2 3] 4");
-  std::vector<std::string> tokens2 = tokenize(raw2);
-  std::vector<std::string> expected2 = {"1", "[", "2", "3", "]", "4"};
-  for (size_t ii = 0; ii < tokens1.size(); ii++) {
-    EXPECT_EQ(tokens2[ii], expected2[ii]);
-  }
+    // various sized lists
+    std::string raw2("[1] [2 3] [4]");
+    std::vector<std::string> tokens2 = tokenize(raw2);
+    std::vector<std::string> expected2 = {"[", "1", "]", "[", "2", "3", "]", "[", "4", "]"};
+    for (size_t ii = 0; ii < tokens2.size(); ii++)
+        EXPECT_EQ(tokens2[ii], expected2[ii]);
+
+    // multi-digit
+    std::string raw3("[123]");
+    std::vector<std::string> tokens3 = tokenize(raw3);
+    std::vector<std::string> expected3 = {"[", "123", "]"};
+    for (size_t ii = 0; ii < tokens3.size(); ii++)
+        EXPECT_EQ(tokens3[ii], expected3[ii]);
 }
 
-TEST(IO, Parse) {
-  std::string raw1("[1]");
-  std::vector<std::vector<int>> parse1 = parse(raw1);
-  //EXPECT_EQ(parse1[0][0], 1);
 
-  std::string raw2("[1] [2 3] [4 5 6]");
-  std::vector<std::vector<int>> parse2 = parse(raw2);
-  EXPECT_EQ(parse2.size(), 3);
-  EXPECT_EQ(parse2[0][0], 1);     // [1]
-  EXPECT_EQ(parse2[0].size(), 1);
-  EXPECT_EQ(parse2[1][0], 2);     // [2 3]
-  EXPECT_EQ(parse2[1][1], 3);
-  EXPECT_EQ(parse2[1].size(), 2);
-  EXPECT_EQ(parse2[2][0], 4);     // [4 5 6]
-  EXPECT_EQ(parse2[2][1], 5);
-  EXPECT_EQ(parse2[2][2], 6);
-  EXPECT_EQ(parse2[2].size(), 3);
+
+TEST(IO, Parse)
+{
+    std::string raw1("[1]");
+    std::vector<std::vector<int>> parse1 = parse(raw1);
+    //EXPECT_EQ(parse1[0][0], 1);
+
+    std::string raw2("[1] [2 3] [4 5 6]");
+    std::vector<std::vector<int>> parse2 = parse(raw2);
+    EXPECT_EQ(parse2.size(), 3);
+    EXPECT_EQ(parse2[0][0], 1);     // [1]
+    EXPECT_EQ(parse2[0].size(), 1);
+    EXPECT_EQ(parse2[1][0], 2);     // [2 3]
+    EXPECT_EQ(parse2[1][1], 3);
+    EXPECT_EQ(parse2[1].size(), 2);
+    EXPECT_EQ(parse2[2][0], 4);     // [4 5 6]
+    EXPECT_EQ(parse2[2][1], 5);
+    EXPECT_EQ(parse2[2][2], 6);
+    EXPECT_EQ(parse2[2].size(), 3);
 }
 
-TEST(IO, Print) {
-  std::vector<std::vector<board_state>> board1 = {{FALSE,FALSE}, {UNKNOWN,UNKNOWN}};
-  std::string print_board1 = board_string(&board1);
-  EXPECT_EQ(print_board1, "xx\n  \n");
-  std::vector<std::vector<board_state>> board2 = {{FALSE,FALSE,FALSE}, {TRUE,TRUE,TRUE}, {UNKNOWN,UNKNOWN,UNKNOWN}};
-  std::string print_board2 = board_string(&board2);
-  EXPECT_EQ(print_board2, "xxx\n███\n   \n");
-}
 
-int main(int argc, char* argv[]) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+
+TEST(IO, Print)
+{
+    std::vector<std::vector<board_state>> board1 = {{FALSE,FALSE}, {UNKNOWN,UNKNOWN}};
+    std::string print_board1 = board_string(&board1);
+    EXPECT_EQ(print_board1, "xx\n  \n");
+    std::vector<std::vector<board_state>> board2 = {{FALSE,FALSE,FALSE}, {TRUE,TRUE,TRUE}, {UNKNOWN,UNKNOWN,UNKNOWN}};
+    std::string print_board2 = board_string(&board2);
+    EXPECT_EQ(print_board2, "xxx\n███\n   \n");
 }

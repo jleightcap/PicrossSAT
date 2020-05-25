@@ -6,80 +6,84 @@
 #include "io.h"
 #include "sat.h"
 
-// tokenize an input string
-// "1 [2 3] 4" -> {1, [, 2, 3, ], 4}
-std::vector<std::string> tokenize(std::string raw) {
-  // iterators might clean this a lot.
-  std::vector<std::string> tokens;
-  size_t ii = 0;
-  while (ii < raw.length()) {
-    if (isspace(raw[ii])) {
-      ii++;
-      continue;
+// Tokenizes an input string.
+// Tokens are digits, [, or ]
+// "[1] [2 3] [4]" -> {[, 1, ], [, 2, 3, ], [, 4, ]}
+std::vector<std::string>
+tokenize(std::string raw)
+{
+    std::vector<std::string> tokens;
+    size_t ii = 0;
+
+    while (ii < raw.length()) {
+        if (isspace(raw[ii])) {
+            ii++; continue;
+        }
+        if (raw[ii] == '[' || raw[ii] == ']') {
+            tokens.push_back(std::string(1, raw[ii]));
+            ii++; continue;
+        }
+        int beg = ii;
+        while (isdigit(raw[ii])) ii++;
+        tokens.push_back(raw.substr(beg, ii - beg));
     }
-    if (raw[ii] == '[' || raw[ii] == ']') {
-      // use string constructor (size, char)
-      tokens.push_back(std::string(1, raw[ii]));
-      ii++;
-      continue;
-    }
-    int beg = ii;
-    while (isdigit(raw[ii])) {
-      ii++;
-    }
-    tokens.push_back(raw.substr(beg, ii - beg));
-  }
-  return tokens;
+    return tokens;
 }
+
+
 
 // Parse user input string into array.
-std::vector<std::vector<int>> parse(std::string raw) {
-  // tokenizing and parsing /could/ be combined into one,
-  // monsterous loop.
-  std::vector<std::string> tokens = tokenize(raw);
-  std::vector<std::vector<int>> parsed;
-  size_t ii = 0;
-  std::vector<int> sub;
-  while (ii < tokens.size()) {
-    if (tokens[ii] == "[") {
-      sub.clear();
-      ii++;
-      continue;
+std::vector<std::vector<int>>
+parse(std::string raw)
+{
+    std::vector<std::string> tokens = tokenize(raw);
+    std::vector<std::vector<int>> parsed;
+    size_t ii = 0;
+    std::vector<int> sub;
+
+    while (ii < tokens.size()) {
+        if (tokens[ii] == "[") {
+            sub.clear(); ii++; continue;
+        }
+        if (tokens[ii] == "]") {
+            parsed.push_back(sub); ii++; continue;
+        }
+        sub.push_back(std::stoi(tokens[ii]));
+        ii++;
     }
-    if (tokens[ii] == "]") {
-      parsed.push_back(sub);
-      ii++;
-      continue;
-    }
-    sub.push_back(std::stoi(tokens[ii]));
-    ii++;
-  }
-  return parsed;
+    return parsed;
 }
 
-std::string board_string(std::vector<std::vector<board_state>> *board) {
-  std::string solution = "";
-  for (size_t ii = 0; ii < board->size(); ii++) {
-    for (size_t jj = 0; jj < board->size(); jj++) {
-      switch((*board)[ii][jj]) {
-        case UNKNOWN:
-          solution.append(" ");
-          break;
-        case FALSE:
-          solution.append("x");
-          break;
-        case TRUE:
-          solution.append("█");
-          break;
-      }
+
+
+// Convert the board representation into a string.
+std::string
+board_string(std::vector<std::vector<board_state>> *board)
+{
+    std::string boardString = "";
+    for (size_t ii = 0; ii < board->size(); ii++) {
+        for (size_t jj = 0; jj < board->size(); jj++) {
+            switch((*board)[ii][jj]) {
+                case UNKNOWN:
+                    boardString.append(" "); break;
+                case FALSE:
+                    boardString.append("x"); break;
+                case TRUE:
+                    boardString.append("█"); break;
+            }
+        }
+        boardString.append("\n");
     }
-    solution.append("\n");
-  }
-  return solution;
+    return boardString;
 }
 
-void write_file(std::string text) {
-  std::ofstream file("solution.txt");
-  file << text;
-  file.close();
+
+
+// Write input string to file.
+void
+write_file(std::string text, std::string filename)
+{
+    std::ofstream file(filename);
+    file << text;
+    file.close();
 }
