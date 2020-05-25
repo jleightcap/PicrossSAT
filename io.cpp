@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "io.h"
-#include "sat.h"
+#include "board.h"
 
 // Tokenizes an input string.
 // Tokens are digits, [, or ]

@@ -5,7 +5,7 @@
 #include <list>
 #include <vector>
 
-#include "sat.h"
+#include "board.h"
 
 std::vector<std::string> tokenize(std::string raw);
 std::vector<std::vector<int>> parse(std::string input);
