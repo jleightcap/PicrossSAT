@@ -1,8 +1,10 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
-#include "solve.h"
+#include "io.h"
+#include "sat.h"
 
 // tokenize an input string
 // "1 [2 3] 4" -> {1, [, 2, 3, ], 4}
@@ -74,4 +76,10 @@ std::string board_string(std::vector<std::vector<board_state>> *board) {
     solution.append("\n");
   }
   return solution;
+}
+
+void write_file(std::string text) {
+  std::ofstream file("solution.txt");
+  file << text;
+  file.close();
 }
