@@ -58,7 +58,7 @@ parse(std::string raw)
 
 // Convert the board representation into a string.
 std::string
-board_string(std::vector<std::vector<board_state>> *board)
+board_string(std::vector<std::vector<boardState>> *board)
 {
     std::string boardString = "";
     for (size_t ii = 0; ii < board->size(); ii++) {

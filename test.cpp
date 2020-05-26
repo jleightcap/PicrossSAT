@@ -9,25 +9,32 @@
 
 TEST(IO, Tokenize)
 {
+    // empty string
+    std::string empty("");
+    auto empty_tokens = tokenize(empty);
+    EXPECT_EQ(empty_tokens.size(), 0);
+
     // empty list, tab and space ignored
     std::string raw1("[        ]");
-    std::vector<std::string> tokens1 = tokenize(raw1);
+    auto tokens1 = tokenize(raw1);
     std::vector<std::string> expected1 = {"[", "]"};
-    ASSERT_EQ(tokens1.size(), expected1.size());
+    EXPECT_EQ(tokens1.size(), expected1.size());
     for (size_t ii = 0; ii < tokens1.size(); ii++)
         EXPECT_EQ(tokens1[ii], expected1[ii]);
 
     // various sized lists
     std::string raw2("[1] [2 3] [4]");
-    std::vector<std::string> tokens2 = tokenize(raw2);
+    auto tokens2 = tokenize(raw2);
     std::vector<std::string> expected2 = {"[", "1", "]", "[", "2", "3", "]", "[", "4", "]"};
+    EXPECT_EQ(tokens2.size(), expected2.size());
     for (size_t ii = 0; ii < tokens2.size(); ii++)
         EXPECT_EQ(tokens2[ii], expected2[ii]);
 
     // multi-digit
     std::string raw3("[123]");
-    std::vector<std::string> tokens3 = tokenize(raw3);
+    auto tokens3 = tokenize(raw3);
     std::vector<std::string> expected3 = {"[", "123", "]"};
+    EXPECT_EQ(tokens3.size(), expected3.size());
     for (size_t ii = 0; ii < tokens3.size(); ii++)
         EXPECT_EQ(tokens3[ii], expected3[ii]);
 }
@@ -36,12 +43,19 @@ TEST(IO, Tokenize)
 
 TEST(IO, Parse)
 {
+    // empty
+    std::string empty("");
+    auto parse0 = parse(empty);
+    EXPECT_EQ(parse0.size(), 0);
+
+    // singleton
     std::string raw1("[1]");
-    std::vector<std::vector<int>> parse1 = parse(raw1);
+    auto parse1 = parse(raw1);
     EXPECT_EQ(parse1[0][0], 1);
 
+    // mixed sizes
     std::string raw2("[1] [2 3] [456]");
-    std::vector<std::vector<int>> parse2 = parse(raw2);
+    auto parse2 = parse(raw2);
     EXPECT_EQ(parse2.size(), 3);
     EXPECT_EQ(parse2[0][0], 1);     // [1]
     EXPECT_EQ(parse2[0].size(), 1);
@@ -56,13 +70,28 @@ TEST(IO, Parse)
 
 TEST(IO, Print)
 {
-    std::vector<std::vector<board_state>> board1
-        = {{FALSE,FALSE}, {UNKNOWN,UNKNOWN}};
-    std::string print_board1 = board_string(&board1);
-    EXPECT_EQ(print_board1, "xx\n  \n");
+    // empty board
+    std::vector<std::vector<boardState>> empty;
+    auto empty_board = board_string(&empty);
+    EXPECT_EQ(empty_board, "");
 
-    std::vector<std::vector<board_state>> board2
-        = {{FALSE,FALSE,FALSE}, {TRUE,TRUE,TRUE}, {UNKNOWN,UNKNOWN,UNKNOWN}};
-    std::string print_board2 = board_string(&board2);
-    EXPECT_EQ(print_board2, "xxx\n███\n   \n");
+    // non-empty, mixed state
+    std::vector<std::vector<boardState>> board
+        = {{FALSE,FALSE,FALSE}, {TRUE,TRUE,TRUE}, {UNKNOWN,FALSE,UNKNOWN}};
+    auto print_board = board_string(&board);
+    EXPECT_EQ(print_board, "xxx\n███\n x \n");
+}
+
+
+
+TEST(Board, Construct)
+{
+    // board initialization
+    std::vector<std::vector<int>> vec1 = {{1}};
+    Board b1(2, &vec1, &vec1);
+    EXPECT_EQ((*b1.getBoard())[0][0], UNKNOWN);
+
+    // setting memory of board
+    b1.setBoard(TRUE, 1, 1);
+    EXPECT_EQ((*b1.getBoard())[1][1], TRUE);
 }

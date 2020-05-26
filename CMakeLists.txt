@@ -1,7 +1,10 @@
-cmake_minimum_required (VERSION 3.5)
-project (picrosssat LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.5)
+project(picrosssat LANGUAGES CXX)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-O3 -flto -lstdc++")
+#set(CMAKE_CXX_COMPILER clang)
 
 find_package(MiniSat 2.2 REQUIRED)
 find_package(GTest REQUIRED)
@@ -11,5 +14,6 @@ target_link_libraries(picrosssat MiniSat::libminisat)
 
 add_executable(test test.cpp io.cpp sat.cpp)
 include_directories(${GTEST_INCLUDE_DIRS})
+target_link_libraries(test MiniSat::libminisat)
 target_link_libraries(test ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
 
