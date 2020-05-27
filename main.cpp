@@ -18,8 +18,9 @@ int main() {
   //std::getline(std::cin, restrict_column);
   auto column_vector = parse(restrict_column);
 
-  assert(row_vector.size() == column_vector.size());
-  Board b1(row_vector.size(), &row_vector, &column_vector);
-  solve(&b1);
+  Board b1(&row_vector, &column_vector);
+  SATExpr s;
+  s.solve(&b1);
+
   return 0;
 }

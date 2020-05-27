@@ -5,9 +5,20 @@
 
 #include "board.h"
 
-auto dnf(Board* b, Minisat::Solver* s, Minisat::vec<Minisat::Lit>* lits);
+class SATExpr {
+    private:
+        std::vector<std::vector<Minisat::Lit>> dnfVec;
+        std::vector<std::vector<Minisat::Lit>> cnfVec;
 
-void solve(Board* board);
+    public:
+        // convert a Board into the corresponding DNF vector
+        void dnf(Board* b);
 
+        // convert a DNF vector to a CNF vector
+        void cnf();
+
+        // solve CNF vector
+        void solve(Board* b);
+};
 
 #endif

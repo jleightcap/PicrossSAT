@@ -2,27 +2,36 @@
 #include <iostream>
 
 #include "board.h"
+#include "sat.h"
 
 void
-dnf(Board* b, Minisat::Solver* s, Minisat::vec<Minisat::Lit>* lits)
+SATExpr::dnf(Board* b)
 {
-    auto A = s->newVar();
-    lits->push(Minisat::mkLit(A));
 }
 
 
 
 void
-solve(Board* b)
+SATExpr::cnf()
+{
+}
+
+
+
+void
+SATExpr::solve(Board* b)
 {
     using Minisat::mkLit;
     using Minisat::lbool;
+
+    dnf(b); // generate DNF vector for given board
+    cnf();  // convert DNF vector to CNF vector
 
     Minisat::Solver solver;
     Minisat::vec<Minisat::Lit> lits;
 
     // create DNF literals
-    dnf(b, &solver, &lits);
+    // auto vec = dnf(b, &solver, &lits);
 
     // Create variables
     auto A = solver.newVar();

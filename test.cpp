@@ -46,7 +46,7 @@ TEST(IO, Parse)
     // empty
     std::string empty("");
     auto parse0 = parse(empty);
-    EXPECT_EQ(parse0.size(), 0);
+    EXPECT_EQ(parse0.size(), NULL);
 
     // singleton
     std::string raw1("[1]");
@@ -57,11 +57,14 @@ TEST(IO, Parse)
     std::string raw2("[1] [2 3] [456]");
     auto parse2 = parse(raw2);
     EXPECT_EQ(parse2.size(), 3);
+
     EXPECT_EQ(parse2[0][0], 1);     // [1]
     EXPECT_EQ(parse2[0].size(), 1);
+
     EXPECT_EQ(parse2[1][0], 2);     // [2 3]
     EXPECT_EQ(parse2[1][1], 3);
     EXPECT_EQ(parse2[1].size(), 2);
+
     EXPECT_EQ(parse2[2][0], 456);   // [456]
     EXPECT_EQ(parse2[2].size(), 1);
 }
@@ -72,13 +75,13 @@ TEST(IO, Print)
 {
     // empty board
     std::vector<std::vector<boardState>> empty;
-    auto empty_board = board_string(&empty);
+    auto empty_board = boardString(&empty);
     EXPECT_EQ(empty_board, "");
 
     // non-empty, mixed state
     std::vector<std::vector<boardState>> board
         = {{FALSE,FALSE,FALSE}, {TRUE,TRUE,TRUE}, {UNKNOWN,FALSE,UNKNOWN}};
-    auto print_board = board_string(&board);
+    auto print_board = boardString(&board);
     EXPECT_EQ(print_board, "xxx\n███\n x \n");
 }
 
@@ -87,8 +90,8 @@ TEST(IO, Print)
 TEST(Board, Construct)
 {
     // board initialization
-    std::vector<std::vector<int>> vec1 = {{1}};
-    Board b1(2, &vec1, &vec1);
+    std::vector<std::vector<int>> vec1 = {{1}, {1}};
+    Board b1(&vec1, &vec1);
     EXPECT_EQ((*b1.getBoard())[0][0], UNKNOWN);
 
     // setting memory of board
