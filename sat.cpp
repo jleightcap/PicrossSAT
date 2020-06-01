@@ -9,8 +9,6 @@ using Minisat::mkLit;
 using Minisat::lbool;
 using std::vector;
 
-
-
 template<class T>
 void printArray(const vector<vector<T>>* v)
 {
@@ -21,6 +19,48 @@ void printArray(const vector<vector<T>>* v)
     }
 }
 
+SATExpr::SATExpr(Board* b)
+{
+    auto dimX = b->getDimX();
+    auto dimY = b->getDimY();
+
+    for (auto& colRestrict : *b->getColumnVec()) {
+        int colSum = 0;
+        for (auto& nn : colRestrict) colSum += nn;
+
+        int n = dimY - colSum;
+        int h = n;
+        int w = colRestrict.size() + 1;
+
+        auto v = sumPermute(n,h,w);
+        zeroPad<int>(&v, w);
+        auto permutes = permute(&v);
+        filterWhiteSpace(&permutes);
+    }
+
+    for (auto& rowRestrict : *b->getRowVec()) {
+        int rowSum = 0;
+        for (auto& nn : rowRestrict) rowSum += nn;
+
+        int n = dimX - rowSum;
+        int h = n;
+        int w = rowRestrict.size() + 1;
+
+        auto v = sumPermute(n,h,w);
+        zeroPad<int>(&v, w);
+        auto permutes = permute(&v);
+        filterWhiteSpace(&permutes);
+    }
+}
+
+
+
+SATExpr::~SATExpr()
+{
+    dnfVec.clear();
+    cnfVec.clear();
+    lits.clear();
+}
 
 
 vector<vector<int>>
@@ -56,16 +96,10 @@ sumPermute(int n, int h, int w)
 
 template<class T>
 void
-zeroPad(vector<vector<T>>* v)
+zeroPad(vector<vector<T>>* v, int w)
 {
-    // maximum size (probably better way... lambdas?)
-    // alternately, this would be more effecient to do in sumPermute
-    // this seems more modular & testable, but test overhead
-    size_t max = 0;
-    for(auto& vv : *v) max = (vv.size() > max) ? vv.size() : max;
-
     for(auto& vv : *v) {
-        vector<int> padding(max - vv.size(), 0);
+        vector<int> padding(w - vv.size(), 0);
         vv.insert(vv.begin(), padding.begin(), padding.end());
     }
 }
@@ -107,18 +141,8 @@ filterWhiteSpace(vector<vector<int>>* perms)
 
 
 void
-SATExpr::dnf(Board* b)
+SATExpr::dnf()
 {
-    auto v = sumPermute(3,2,3);
-    zeroPad<int>(&v);
-    printArray(&v);
-    std::clog << std::endl;
-    auto permutes = permute(&v);
-    printArray(&permutes);
-    std::clog << std::endl;
-
-    filterWhiteSpace(&permutes);
-    printArray(&permutes);
 }
 
 
@@ -133,10 +157,6 @@ SATExpr::cnf()
 void
 SATExpr::solve(Board* b)
 {
-    dnf(b); // generate DNF vector for given board
-    cnf();  // convert DNF vector to CNF vector
-
-    /*
     Minisat::Solver solver;
     Minisat::vec<Minisat::Lit> lits;
 
@@ -170,5 +190,4 @@ SATExpr::solve(Board* b)
     } else {
         std::clog << "UNSAT\n";
     }
-    */
 }

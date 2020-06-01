@@ -13,8 +13,11 @@ class SATExpr {
         std::vector<Minisat::Lit> lits;
 
     public:
+        SATExpr(Board* b);
+        ~SATExpr();
+
         // convert a Board into the corresponding DNF vector
-        void dnf(Board* b);
+        void dnf();
 
         // convert a DNF vector to a CNF vector
         void cnf();
@@ -34,11 +37,11 @@ std::vector<std::vector<int>> sumPermute(int n, int h, int w);
 
 
 
-// prepend subvectors with zeros to maximum subvector size
-// ex: {{0}, {1,1}, {1,2,3}} -> {{0,0,0}, {0,1,1}, {1,2,3}}
+// prepend subvectors with zeros to given size
+// ex (w=3): {{0}, {1,1}, {1,2,3}} -> {{0,0,0}, {0,1,1}, {1,2,3}}
 // used for creating permutations of constant size
 template<class T>
-void zeroPad(std::vector<std::vector<T>>* v);
+void zeroPad(std::vector<std::vector<T>>* v, int w);
 
 
 

@@ -16,8 +16,7 @@ int main() {
   auto column_vector = parse(restrict_column);
 
   Board b1(&row_vector, &column_vector);
-  SATExpr s;
-  s.solve(&b1);
+  SATExpr s(&b1);
 
   return 0;
 }

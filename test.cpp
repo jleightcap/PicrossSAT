@@ -143,7 +143,7 @@ TEST(SAT, zeroPad)
 {
     // v3 example from SAT/sumPermute, all subvectors padded to max length 4
     auto v = sumPermute(4,3,4);
-    zeroPad<int>(&v);
+    zeroPad<int>(&v, 4);
     size_t commonSize = v[0].size();
     // all same length
     for (auto& vv : v) EXPECT_EQ(vv.size(), commonSize);
@@ -156,7 +156,7 @@ TEST(SAT, zeroPad)
 TEST(SAT, permute)
 {
     auto v = sumPermute(3,2,3);
-    zeroPad<int>(&v);
+    zeroPad<int>(&v, 3);
     // v = {
     //  {1,1,1},
     //  {0,1,2}
