@@ -19,48 +19,75 @@ void printArray(const vector<vector<T>>* v)
     }
 }
 
+
+
 SATExpr::SATExpr(Board* b)
 {
     auto dimX = b->getDimX();
     auto dimY = b->getDimY();
+    auto rowRestricts = *b->getRowVec();
+    auto colRestricts = *b->getColumnVec();
 
-    for (auto& colRestrict : *b->getColumnVec()) {
-        int colSum = 0;
-        for (auto& nn : colRestrict) colSum += nn;
+    for (auto& rowRestrict : rowRestricts) {
+        auto permutes = restrictParse(rowRestrict, dimX);
 
-        int n = dimY - colSum;
-        int h = n;
-        int w = colRestrict.size() + 1;
-
-        auto v = sumPermute(n,h,w);
-        zeroPad<int>(&v, w);
-        auto permutes = permute(&v);
-        filterWhiteSpace(&permutes);
+        // actual board states
+        for (auto& nn : permutes) {
+            Minisat::vec<Minisat::Lit> inner;
+            int idx = 0; // index into vector, needed for variable encoding
+            
+            for (size_t ii = 0; ii < nn.size(); ii++) {
+                for (int jj = 0; jj < nn[ii]; jj++) {
+                    std::clog << "0";
+                    idx++;
+                }
+                for (int jj = 0; jj < rowRestrict[ii]; jj++) {
+                    std::clog << "1";
+                    idx++;
+                }
+            }
+            std::clog << std::endl;
+        }
+        std::clog << std::endl;
     }
 
-    for (auto& rowRestrict : *b->getRowVec()) {
-        int rowSum = 0;
-        for (auto& nn : rowRestrict) rowSum += nn;
+    for (auto& colRestrict : colRestricts) {
+        auto permutes = restrictParse(colRestrict, dimY);
 
-        int n = dimX - rowSum;
-        int h = n;
-        int w = rowRestrict.size() + 1;
-
-        auto v = sumPermute(n,h,w);
-        zeroPad<int>(&v, w);
-        auto permutes = permute(&v);
-        filterWhiteSpace(&permutes);
+        // actual board states
+        /*
+        for (auto& nn : permutes) {
+            for (size_t ii = 0; ii < nn.size(); ii++) {
+                for (int jj = 0; jj < nn[ii]; jj++) std::clog << "0";
+                for (int jj = 0; jj < colRestrict[ii]; jj++) std::clog << "1";
+            }
+            std::clog << std::endl;
+        }
+        std::clog << std::endl;
+        */
     }
 }
 
 
 
-SATExpr::~SATExpr()
+vector<vector<int>>
+restrictParse(std::vector<int> v, int dim)
 {
-    dnfVec.clear();
-    cnfVec.clear();
-    lits.clear();
+    int sum = 0;
+    for (auto& nn : v) sum += nn;
+
+    int n = dim - sum;
+    int h = n;
+    int w = v.size() + 1;
+
+    auto sumVec = sumPermute(n,h,w);
+    zeroPad<int>(&sumVec, w);
+    auto sumPermute = permute(&sumVec);
+    filterWhiteSpace(&sumPermute);
+
+    return sumPermute;
 }
+
 
 
 vector<vector<int>>
@@ -141,21 +168,7 @@ filterWhiteSpace(vector<vector<int>>* perms)
 
 
 void
-SATExpr::dnf()
-{
-}
-
-
-
-void
-SATExpr::cnf()
-{
-}
-
-
-
-void
-SATExpr::solve(Board* b)
+SATExpr::solve()
 {
     Minisat::Solver solver;
     Minisat::vec<Minisat::Lit> lits;

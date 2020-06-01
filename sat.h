@@ -8,26 +8,21 @@ class SATExpr {
     private:
         // Variable mapping uses row-major ordering,
         // board[ii][jj] => Var(ii + [jj * board.dimX])
-        std::vector<std::vector<Minisat::Lit>> dnfVec;
-        std::vector<std::vector<Minisat::Lit>> cnfVec;
-        std::vector<Minisat::Lit> lits;
+        std::vector<Minisat::vec<Minisat::Lit>>* cnfVec;
 
     public:
         SATExpr(Board* b);
-        ~SATExpr();
-
-        // convert a Board into the corresponding DNF vector
-        void dnf();
-
-        // convert a DNF vector to a CNF vector
-        void cnf();
 
         // solve CNF vector
-        void solve(Board* b);
+        void solve();
 
-        auto getDNF() { return dnfVec; }
         auto getCNF() { return cnfVec; }
 };
+
+
+
+// parse restriction vectors into whitespace vectors
+std::vector<std::vector<int>> restrictParse(std::vector<int> v, int dim);
 
 
 
