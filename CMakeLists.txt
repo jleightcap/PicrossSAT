@@ -7,11 +7,12 @@ set(CMAKE_CXX_FLAGS "-O3 -flto")
 
 find_package(MiniSat 2.2 REQUIRED)
 find_package(GTest REQUIRED)
+include(CTest)
 
 add_executable(picrosssat main.cpp io.cpp sat.cpp)
 target_link_libraries(picrosssat MiniSat::libminisat)
 
-add_executable(test test.cpp io.cpp sat.cpp)
+add_executable(gtest test.cpp io.cpp sat.cpp)
 include_directories(${GTEST_INCLUDE_DIRS})
-target_link_libraries(test MiniSat::libminisat)
-target_link_libraries(test ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
+target_link_libraries(gtest MiniSat::libminisat)
+target_link_libraries(gtest ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)

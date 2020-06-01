@@ -1,8 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 enum boardState { UNKNOWN, FALSE, TRUE };
 
@@ -13,10 +13,10 @@ class Board {
 
         // board[x][y] is boardState at index {x,y} (Cartesian)
         std::vector<std::vector<boardState>> board;
-        // (*row_vector)[ii] is vector of occupied cells in row ii
-        std::vector<std::vector<int>> *row_vector;
-        // (*column_vector)[jj] is vector of occupied cells in column jj
-        std::vector<std::vector<int>> *column_vector;
+        // (*rowVecs)[ii] is std::vector of occupied cells in row ii
+        std::vector<std::vector<int>> *rowVecs;
+        // (*colVecs)[jj] is std::vector of occupied cells in column jj
+        std::vector<std::vector<int>> *colVecs;
 
     public:
         // initialize board to all UNKNOWN of given size
@@ -24,23 +24,24 @@ class Board {
               std::vector<std::vector<int>> *column):
             nn(row->size()),
             mm(column->size()),
-            board(std::vector<std::vector<boardState>>(row->size(),
-                        std::vector<boardState>(column->size(),
-                            UNKNOWN))),
-            row_vector(row),
-            column_vector(column)
+            board(std::vector<std::vector<boardState>>(nn, std::vector<boardState>(mm, UNKNOWN))),
+            rowVecs(row),
+            colVecs(column)
         {}
 
         ~Board()
         {
             board.clear();
-            row_vector->clear();
-            column_vector->clear();
+            rowVecs->clear();
+            colVecs->clear();
         }
 
-        auto getBoard() { return &board; }
-        auto getDimX()  { return nn; }
-        auto getDimY()  { return mm; }
+        auto getDimX()      { return nn; }
+        auto getDimY()      { return mm; }
+        auto getBoard()     { return &board; }
+        auto getRowVec()    { return rowVecs; }
+        auto getColumnVec() { return colVecs; }
+
         void setBoard(boardState bs, int ii, int jj) { board[ii][jj] = bs; }
 };
 
