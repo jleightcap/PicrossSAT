@@ -6,17 +6,23 @@
 
 class SATExpr {
     private:
+        // board dimensions
+        int dimX;
+        int dimY;
+
         // Variable mapping uses row-major ordering,
         // board[ii][jj] => Var(ii + [jj * board.dimX])
-        std::vector<Minisat::vec<Minisat::Lit>>* cnfVec;
 
+        // vector of DNF expressions
+        Minisat::vec<Minisat::vec<Minisat::Lit>> dnfVec;
+
+        // vector of CNF expressions
+        Minisat::vec<Minisat::vec<Minisat::Lit>> cnfVec;
     public:
         SATExpr(Board* b);
 
         // solve CNF vector
         void solve();
-
-        auto getCNF() { return cnfVec; }
 };
 
 

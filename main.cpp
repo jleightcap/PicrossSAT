@@ -17,6 +17,7 @@ int main() {
 
   Board b1(&row_vector, &column_vector);
   SATExpr s(&b1);
+  s.solve();
 
   return 0;
 }

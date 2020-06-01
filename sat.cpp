@@ -23,48 +23,59 @@ void printArray(const vector<vector<T>>* v)
 
 SATExpr::SATExpr(Board* b)
 {
-    auto dimX = b->getDimX();
-    auto dimY = b->getDimY();
+    dimX = b->getDimX();
+    dimY = b->getDimY();
     auto rowRestricts = *b->getRowVec();
     auto colRestricts = *b->getColumnVec();
 
-    for (auto& rowRestrict : rowRestricts) {
-        auto permutes = restrictParse(rowRestrict, dimX);
+    for (size_t yy = 0; yy < rowRestricts.size(); yy++) {
+        auto permutes = restrictParse(rowRestricts[yy], dimX);
 
-        // actual board states
-        for (auto& nn : permutes) {
+        // convert row permutations to CNF expression
+        for (auto& permute : permutes) {
             Minisat::vec<Minisat::Lit> inner;
-            int idx = 0; // index into vector, needed for variable encoding
+            int xx = 0; // index into row, needed for variable encoding
             
-            for (size_t ii = 0; ii < nn.size(); ii++) {
-                for (int jj = 0; jj < nn[ii]; jj++) {
-                    std::clog << "0";
-                    idx++;
+            for (size_t ii = 0; ii < permute.size(); ii++) {
+                for (int jj = 0; jj < permute[ii]; jj++) {
+                    inner.push( ~mkLit(xx + yy*dimX) );
+                    xx++;
                 }
-                for (int jj = 0; jj < rowRestrict[ii]; jj++) {
-                    std::clog << "1";
-                    idx++;
+                for (int jj = 0; jj < rowRestricts[yy][ii]; jj++) {
+                    inner.push(  mkLit(xx + yy*dimX) );
+                    xx++;
                 }
             }
-            std::clog << std::endl;
+
+            // really convoluted 'push_back' using MiniSat's Vec wrapper
+            dnfVec.growTo(dnfVec.size() + 1);
+            inner.moveTo(dnfVec.last());
         }
-        std::clog << std::endl;
     }
 
-    for (auto& colRestrict : colRestricts) {
-        auto permutes = restrictParse(colRestrict, dimY);
+    // convert column permutations to CNF expression
+    for (size_t xx = 0; xx < colRestricts.size(); xx++) {
+        auto permutes = restrictParse(colRestricts[xx], dimY);
 
-        // actual board states
-        /*
-        for (auto& nn : permutes) {
-            for (size_t ii = 0; ii < nn.size(); ii++) {
-                for (int jj = 0; jj < nn[ii]; jj++) std::clog << "0";
-                for (int jj = 0; jj < colRestrict[ii]; jj++) std::clog << "1";
+        for (auto& permute : permutes) {
+            Minisat::vec<Minisat::Lit> inner;
+            int yy = 0; // index into column, need for variable encoding
+
+            for (size_t ii = 0; ii < permute.size(); ii++) {
+                for (int jj = 0; jj < permute[ii]; jj++) {
+                    inner.push( ~mkLit(xx + yy*dimX) );
+                    yy++;
+                }
+                for (int jj = 0; jj < colRestricts[xx][ii]; jj++) {
+                    inner.push(  mkLit(xx + yy*dimX) );
+                    yy++;
+                }
             }
-            std::clog << std::endl;
+
+            // really convoluted 'push_back' using MiniSat's Vec wrapper
+            dnfVec.growTo(dnfVec.size() + 1);
+            inner.moveTo(dnfVec.last());
         }
-        std::clog << std::endl;
-        */
     }
 }
 
@@ -171,35 +182,24 @@ void
 SATExpr::solve()
 {
     Minisat::Solver solver;
-    Minisat::vec<Minisat::Lit> lits;
 
-    // create DNF literals
-    // auto vec = dnf(b, &solver, &lits);
+    // initialize solver variables, dimX*dimY total variables
+    for (int ii = 0; ii < dimX * dimY; ii++)
+        solver.newVar();
 
-    // Create variables
-    auto A = solver.newVar();
-    auto B = solver.newVar();
-    auto C = solver.newVar();
-    auto D = solver.newVar();
+    // add expressions
+    // (just DNF for right now, completely meaningless)
+    for (auto& nn : dnfVec)
+        solver.addClause(nn);
 
-    // Create the clauses
-    solver.addClause( mkLit(A));
-    solver.addClause( mkLit(B));
-    solver.addClause( mkLit(C),  mkLit(D));
-    solver.addClause(~mkLit(C), ~mkLit(D));
-    solver.addClause( mkLit(A));
-    solver.addClause( mkLit(C));
-    solver.addClause( mkLit(B),  mkLit(D));
-    solver.addClause(~mkLit(B), ~mkLit(D));
-
-    // Check for solution and retrieve model if found
     auto sat = solver.solve();
     if (sat) {
-        std::clog << "SAT" << std::endl << "Model found:\n";
-        std::clog << "A := " << (solver.modelValue(A) == l_True) << '\n';
-        std::clog << "B := " << (solver.modelValue(B) == l_True) << '\n';
-        std::clog << "C := " << (solver.modelValue(C) == l_True) << '\n';
-        std::clog << "D := " << (solver.modelValue(D) == l_True) << '\n';
+        std::clog << " SAT \n=====\n";
+        for (int ii = 0; ii < dimX; ii++) {
+            for (int jj = 0; jj < dimY; jj++)
+                std::clog << (solver.modelValue(ii + dimX*jj) == l_True);
+            std::clog << std::endl;
+        }
     } else {
         std::clog << "UNSAT\n";
     }
