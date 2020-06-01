@@ -152,3 +152,53 @@ TEST(SAT, zeroPad)
     for (int ii = 0; ii < 2; ii++) EXPECT_EQ(v[2][ii], 0);
     for (int ii = 0; ii < 2; ii++) EXPECT_EQ(v[3][ii], 0);
 }
+
+TEST(SAT, permute)
+{
+    auto v = sumPermute(3,2,3);
+    zeroPad<int>(&v);
+    // v = {
+    //  {1,1,1},
+    //  {0,1,2}
+    // };
+    auto permutes = permute(&v);
+    vector<vector<int>> permutesExp = {
+        {1,1,1},
+        {0,1,2},
+        {0,2,1},
+        {1,0,2},
+        {1,2,0},
+        {2,0,1},
+        {2,1,0}
+    };
+    EXPECT_EQ(permutes.size(), 7);
+    for (size_t ii = 0; ii < permutes.size(); ii++) {
+        for (size_t jj = 0; jj < permutes[ii].size(); jj++)
+            EXPECT_EQ(permutes[ii][jj], permutesExp[ii][jj]);
+    }
+}
+
+TEST(SAT, filter)
+{
+    vector<vector<int>> v = {
+        {0},             // valid (only for empty board)
+        {0,0},           // smallest non-empty valid
+        {0,0,0},         // invalid, B_1 < 1
+        {0,1,0},         // valid
+        {0,1,2,3,4,5,0}, // valid
+        {0,1,0,1,0}      // invalid, B_2 < 1
+    };
+    vector<vector<int>> vExp = {
+        {0},
+        {0,0},
+        {0,1,0},
+        {0,1,2,3,4,5,0}
+    };
+
+    filterWhiteSpace(&v);
+
+    for (size_t ii = 0; ii < v.size(); ii++) {
+        for (size_t jj = 0; jj < v[ii].size(); jj++)
+            EXPECT_EQ(v[ii][jj], vExp[ii][jj]);
+    }
+}

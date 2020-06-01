@@ -37,8 +37,11 @@ sumPermute(int n, int h, int w)
             result.push_back(inner);
             return result;
         }
+
         vector<vector<int>> recur = sumPermute(n -ii, ii, w - 1);
+
         for (auto& nn : recur) {
+            // append each element of recur to inner, add to results
             vector<int> sum;
             sum.reserve(inner.size() + nn.size());
             sum.insert(sum.end(), nn.begin(), nn.end());
@@ -85,13 +88,36 @@ permute(vector<vector<T>>* v)
 
 
 void
+filterWhiteSpace(vector<vector<int>>* perms)
+{
+    perms->erase(
+        // LAMBDA TIME!
+        std::remove_if(perms->begin(), perms->end(),
+            [](const vector<int>& ws) {
+                // elements strictly >= 0, don't check B_0 and B_n (always valid)
+                // checking B_1 .. B_{n-1},
+                for(size_t ii = 1; ii < ws.size() - 1; ii++)
+                    if(ws[ii] < 1) return true;
+                return false;
+            }),
+        perms->end()
+    );
+}
+
+
+
+void
 SATExpr::dnf(Board* b)
 {
-    auto v = sumPermute(4,3,4);
+    auto v = sumPermute(3,2,3);
     zeroPad<int>(&v);
     printArray(&v);
     std::clog << std::endl;
     auto permutes = permute(&v);
+    printArray(&permutes);
+    std::clog << std::endl;
+
+    filterWhiteSpace(&permutes);
     printArray(&permutes);
 }
 
