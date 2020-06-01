@@ -9,10 +9,12 @@ using Minisat::mkLit;
 using Minisat::lbool;
 using std::vector;
 
+
+
 template<class T>
-void printArray(vector<vector<T>> v)
+void printArray(const vector<vector<T>>* v)
 {
-    for (auto& ii : v) {
+    for (auto& ii : *v) {
         for (auto& jj : ii)
             std::clog << jj << " ";
         std::clog << std::endl;
@@ -39,8 +41,8 @@ sumPermute(int n, int h, int w)
         for (auto& nn : recur) {
             vector<int> sum;
             sum.reserve(inner.size() + nn.size());
-            sum.insert(sum.end(), inner.begin(), inner.end());
             sum.insert(sum.end(), nn.begin(), nn.end());
+            sum.insert(sum.end(), inner.begin(), inner.end());
             result.push_back(sum);
         }
     }
@@ -49,58 +51,48 @@ sumPermute(int n, int h, int w)
 
 
 
+template<class T>
+void
+zeroPad(vector<vector<T>>* v)
+{
+    // maximum size (probably better way... lambdas?)
+    // alternately, this would be more effecient to do in sumPermute
+    // this seems more modular & testable, but test overhead
+    size_t max = 0;
+    for(auto& vv : *v) max = (vv.size() > max) ? vv.size() : max;
+
+    for(auto& vv : *v) {
+        vector<int> padding(max - vv.size(), 0);
+        vv.insert(vv.begin(), padding.begin(), padding.end());
+    }
+}
+
+
+
+template<class T>
+vector<vector<T>>
+permute(vector<vector<T>>* v)
+{
+    vector<vector<T>> permutes;
+    for (auto& vv : *v) {
+        do {
+            permutes.push_back(vv);
+        } while(std::next_permutation(vv.begin(), vv.end()));
+    }
+    return permutes;
+}
+
+
+
 void
 SATExpr::dnf(Board* b)
 {
-    auto result = sumPermute(4,3,4);
-    std::clog << "\n===RESULT===\n";
-    printArray<int>(result);
-    // the number of whitespace cells eps in a slice X with restriction R:
-    // eps = len(X) - sum(R)
-    //
-    // state of slice, as vector of whitespace cells B and occupied R:
-    // { b_0, r_0, b_1, r_1, ... , r_n, b_{n+1} }
-    // where:
-    //       - b_0, b_{n+1} >= 0,
-    //       - b_1 .. b_n > 0,
-    //       - sum(b) = eps
-    //
-    // example: X=5, R={1,1} -- some combinations:
-    //   { 1, 0, 1, 0, 0 }   =>   B = { 0, 1, 2 }
-    //   { 0, 1, 0, 1, 0 }   =>   B = { 1, 1, 1 }
-    //   { 1, 0, 0, 0, 1 }   =>   B = { 0, 3, 0 }
-    // for all combinations,
-    //        - b_0 >= 0, b_2 >= 0
-    //        - b_2 > 0
-    //        - sum(B) = 3 = X - sum(R)
-
-    // see header file for variable encoding, requires use of indexed for loops
-
-    int dimX = b->getDimX();
-    int dimY = b->getDimY();
-
-    // column expressions
-    for (int ii = 0; ii < dimX; ii++) {
-        auto colVec = (*b->getColumnVec())[ii];
-        // eps for X=colVec[ii]
-        int eps = dimX;
-        for (auto& nn : colVec) eps -= nn;
-    }
-
-
-    // row expressions
-    for (int ii = 0; ii < dimY; ii++) {
-        auto rowVec = (*b->getRowVec())[ii];
-        // eps for X=rowVec[jj]
-        int eps = dimY + 1 - rowVec.size();
-        for (auto& nn : rowVec) eps -= nn;
-
-        int h = 4;
-        int n = 5;
-        int w = 3;
-        for (int ii = n; ii >= h/w; ii--) {
-        }
-    }
+    auto v = sumPermute(4,3,4);
+    zeroPad<int>(&v);
+    printArray(&v);
+    std::clog << std::endl;
+    auto permutes = permute(&v);
+    printArray(&permutes);
 }
 
 

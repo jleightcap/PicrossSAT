@@ -126,9 +126,9 @@ TEST(SAT, sumPermute)
     auto v3 = sumPermute(4,3,4);
     EXPECT_EQ(v3.size(), 4);
     vector<int> v3_0 = {1,1,1,1};
-    vector<int> v3_1 = {2,1,1};
+    vector<int> v3_1 = {1,1,2};
     vector<int> v3_2 = {2,2};
-    vector<int> v3_3 = {3,1};
+    vector<int> v3_3 = {1,3};
     for (size_t nn = 0; nn < v3[0].size(); nn++)
         EXPECT_EQ(v3[0][nn], v3_0[nn]);
     for (size_t nn = 0; nn < v3[1].size(); nn++)
@@ -137,4 +137,18 @@ TEST(SAT, sumPermute)
         EXPECT_EQ(v3[2][nn], v3_2[nn]);
     for (size_t nn = 0; nn < v3[3].size(); nn++)
         EXPECT_EQ(v3[3][nn], v3_3[nn]);
+}
+
+TEST(SAT, zeroPad)
+{
+    // v3 example from SAT/sumPermute, all subvectors padded to max length 4
+    auto v = sumPermute(4,3,4);
+    zeroPad<int>(&v);
+    size_t commonSize = v[0].size();
+    // all same length
+    for (auto& vv : v) EXPECT_EQ(vv.size(), commonSize);
+    // extra length is padded zeros
+    for (int ii = 0; ii < 1; ii++) EXPECT_EQ(v[1][ii], 0);
+    for (int ii = 0; ii < 2; ii++) EXPECT_EQ(v[2][ii], 0);
+    for (int ii = 0; ii < 2; ii++) EXPECT_EQ(v[3][ii], 0);
 }

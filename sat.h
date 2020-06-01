@@ -26,6 +26,18 @@ class SATExpr {
         auto getCNF() { return cnfVec; }
 };
 
-std::vector<std::vector<int>> sumPermute(int n, int w, int h);
+// all sets of max size w of numbers [1,h] that add up to n
+// populated in strictly increasing order
+std::vector<std::vector<int>> sumPermute(int n, int h, int w);
+
+// prepend subvectors with zeros to maximum subvector size
+// ex: {{0}, {1,1}, {1,2,3}} -> {{0,0,0}, {0,1,1}, {1,2,3}}
+template<class T>
+void zeroPad(std::vector<std::vector<T>>* v);
+
+// given a vector of vectors, return vector of all permutations of elements of subvectors
+// ex: {{0,1}, {3,5}} -> {{0,1}, {1,0}, {3,5}, {5,3}}
+template<class T>
+std::vector<std::vector<T>> permute(std::vector<std::vector<T>>* v);
 
 #endif
