@@ -202,3 +202,18 @@ TEST(SAT, filter)
             EXPECT_EQ(v[ii][jj], vExp[ii][jj]);
     }
 }
+
+TEST(SAT, DNF)
+{
+    vector<vector<int>> vec1 = {{1}, {1}};
+    Board b1(&vec1, &vec1);
+    Minisat::vec<Minisat::vec<Minisat::Lit>> dnf;
+    SATExpr s1(&b1);
+    (*s1.getDNF()).moveTo(dnf); // transfer ownership of DNFVec from b1 to here
+                                // messes up a lil, dnf[2] and dnf[3] are initialized data
+                                // ???
+    EXPECT_EQ(dnf[2][0].x, 4); // a
+    EXPECT_EQ(dnf[2][1].x, 7); // !b
+    EXPECT_EQ(dnf[3][0].x, 5); // !a
+    EXPECT_EQ(dnf[3][1].x, 6); // b
+}

@@ -9,14 +9,12 @@ using Minisat::mkLit;
 using Minisat::lbool;
 using std::vector;
 
-template<class T>
-void printArray(const vector<vector<T>>* v)
+
+
+SATExpr::~SATExpr()
 {
-    for (auto& ii : *v) {
-        for (auto& jj : ii)
-            std::clog << jj << " ";
-        std::clog << std::endl;
-    }
+    dnfVec.clear();
+    cnfVec.clear();
 }
 
 
@@ -28,8 +26,13 @@ SATExpr::SATExpr(Board* b)
     auto rowRestricts = *b->getRowVec();
     auto colRestricts = *b->getColumnVec();
 
+    // iterate over rows and columns
+    // try to abstract these: almost entirely the same procedure,
+    // except with swapped ordering for variable encoding
+
     for (size_t yy = 0; yy < rowRestricts.size(); yy++) {
         auto permutes = restrictParse(rowRestricts[yy], dimX);
+        Minisat::vec<Minisat::vec<Minisat::Lit>> permuteDNF;
 
         // convert row permutations to CNF expression
         for (auto& permute : permutes) {
@@ -46,16 +49,19 @@ SATExpr::SATExpr(Board* b)
                     xx++;
                 }
             }
-
-            // really convoluted 'push_back' using MiniSat's Vec wrapper
-            dnfVec.growTo(dnfVec.size() + 1);
-            inner.moveTo(dnfVec.last());
+            // convoluted 'push_back' using MiniSat's Vec wrapper
+            permuteDNF.growTo(permuteDNF.size() + 1);
+            inner.moveTo(permuteDNF.last());
         }
+        // convoluted 'push_back' using MiniSat's Vec wrapper
+        dnfVec.growTo(dnfVec.size() + 1);
+        permuteDNF.moveTo(dnfVec.last());
     }
 
     // convert column permutations to CNF expression
     for (size_t xx = 0; xx < colRestricts.size(); xx++) {
         auto permutes = restrictParse(colRestricts[xx], dimY);
+        Minisat::vec<Minisat::vec<Minisat::Lit>> permuteDNF;
 
         for (auto& permute : permutes) {
             Minisat::vec<Minisat::Lit> inner;
@@ -72,11 +78,25 @@ SATExpr::SATExpr(Board* b)
                 }
             }
 
-            // really convoluted 'push_back' using MiniSat's Vec wrapper
-            dnfVec.growTo(dnfVec.size() + 1);
-            inner.moveTo(dnfVec.last());
+            // convoluted 'push_back' using MiniSat's Vec wrapper
+            permuteDNF.growTo(permuteDNF.size() + 1);
+            inner.moveTo(permuteDNF.last());
         }
+        // convoluted 'push_back' using MiniSat's Vec wrapper
+        dnfVec.growTo(dnfVec.size() + 1);
+        permuteDNF.moveTo(dnfVec.last());
     }
+
+    /*
+    for (int ii = 0; ii < dnfVec.size(); ii++) {
+        for (int jj = 0; jj < dnfVec[ii].size(); jj++) {
+            for (int kk = 0; kk < dnfVec[ii][jj].size(); kk++) 
+                std::clog << dnfVec[ii][jj][kk].x << " ";
+            std::clog << std::endl;
+        }
+        std::clog << std::endl;
+    }
+    */
 }
 
 
@@ -179,6 +199,17 @@ filterWhiteSpace(vector<vector<int>>* perms)
 
 
 void
+SATExpr::cnf()
+{
+    // each element of DNF vector is valid DNF expression of form sum(prod(x))
+    // transforming each element sum(prod(x)) -> {prod(sum(x))} gives valid CNF vector
+    std::clog << "frick\n";
+    return;
+}
+
+
+
+void
 SATExpr::solve()
 {
     Minisat::Solver solver;
@@ -190,7 +221,7 @@ SATExpr::solve()
     // add expressions
     // (just DNF for right now, completely meaningless)
     for (auto& nn : dnfVec)
-        solver.addClause(nn);
+        solver.addClause(*nn);
 
     auto sat = solver.solve();
     if (sat) {
