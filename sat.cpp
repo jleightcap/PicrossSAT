@@ -23,8 +23,8 @@ SATExpr::SATExpr(Board* b)
 {
     dimX = b->getDimX();
     dimY = b->getDimY();
-    auto rowRestricts = *b->getRowVec();
-    auto colRestricts = *b->getColumnVec();
+    const auto rowRestricts = *b->getRowVec();
+    const auto colRestricts = *b->getColumnVec();
 
     // iterate over rows and columns
     // try to abstract these: almost entirely the same procedure,
@@ -38,7 +38,7 @@ SATExpr::SATExpr(Board* b)
         for (auto& permute : permutes) {
             Minisat::vec<Minisat::Lit> inner;
             int xx = 0; // index into row, needed for variable encoding
-            
+
             for (size_t ii = 0; ii < permute.size(); ii++) {
                 for (int jj = 0; jj < permute[ii]; jj++) {
                     inner.push( ~mkLit(xx + yy*dimX) );
@@ -87,16 +87,15 @@ SATExpr::SATExpr(Board* b)
         permuteDNF.moveTo(dnfVec.last());
     }
 
-    /*
+    std::clog << "\n===DNF===\n";
     for (int ii = 0; ii < dnfVec.size(); ii++) {
         for (int jj = 0; jj < dnfVec[ii].size(); jj++) {
-            for (int kk = 0; kk < dnfVec[ii][jj].size(); kk++) 
+            for (int kk = 0; kk < dnfVec[ii][jj].size(); kk++)
                 std::clog << dnfVec[ii][jj][kk].x << " ";
             std::clog << std::endl;
         }
         std::clog << std::endl;
     }
-    */
 }
 
 
@@ -152,8 +151,7 @@ sumPermute(int n, int h, int w)
 
 
 
-template<class T>
-void
+template<class T> void
 zeroPad(vector<vector<T>>* v, int w)
 {
     for(auto& vv : *v) {
@@ -164,8 +162,7 @@ zeroPad(vector<vector<T>>* v, int w)
 
 
 
-template<class T>
-vector<vector<T>>
+template<class T> vector<vector<T>>
 permute(vector<vector<T>>* v)
 {
     vector<vector<T>> permutes;
@@ -201,10 +198,47 @@ filterWhiteSpace(vector<vector<int>>* perms)
 void
 SATExpr::cnf()
 {
-    // each element of DNF vector is valid DNF expression of form sum(prod(x))
-    // transforming each element sum(prod(x)) -> {prod(sum(x))} gives valid CNF vector
-    std::clog << "frick\n";
-    return;
+    for (int subvec = 0; subvec < dnfVec.size(); subvec++) {
+        // variable number of nested for loops, based on size
+        const int nn = dnfVec[subvec].size();
+
+        // vector of iteration variables
+        vector<int> iter(nn + 1, 0);
+
+        // limit of each for loop (all innermost AND expressions have same length dimX/dimY)
+        const int iterLim = dnfVec[subvec][0].size();
+
+        // current cell, needed for loop termination
+        int pp = 0;
+
+        while (iter[nn] == 0) {
+            Minisat::vec<Minisat::Lit> inner;
+            for (int ii = 0; ii < nn; ii++) {
+                //std::clog << dnfVec[subvec][ii][iter[ii]].x << " ";
+                inner.push(dnfVec[subvec][ii][iter[ii]]);
+            }
+            //std::clog << std::endl;
+
+            // convoluted 'push_back' using MiniSat's Vec wrapper
+            cnfVec.growTo(cnfVec.size() + 1);
+            inner.moveTo(cnfVec.last());
+
+            // iteration handling
+            iter[0]++;
+            while(iter[pp] == iterLim) {
+                iter[pp] = 0;
+                iter[++pp]++;
+                if (iter[pp] != iterLim) pp=0;
+            }
+        }
+    }
+
+    std::clog << "\n===CNF===\n";
+    for (auto& nn : cnfVec) {
+        for (auto& mm : nn)
+            std::clog << mm.x << " ";
+        std::clog << std::endl;
+    }
 }
 
 
@@ -220,7 +254,7 @@ SATExpr::solve()
 
     // add expressions
     // (just DNF for right now, completely meaningless)
-    for (auto& nn : dnfVec)
+    for (auto& nn : cnfVec)
         solver.addClause(*nn);
 
     auto sat = solver.solve();

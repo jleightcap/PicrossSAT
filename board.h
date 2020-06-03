@@ -8,8 +8,8 @@ enum boardState { UNKNOWN, FALSE, TRUE };
 
 class Board {
     private:
-        int nn; // dim(x)
-        int mm; // dim(y)
+        const int nn; // dim(x)
+        const int mm; // dim(y)
 
         // board[x][y] is boardState at index {x,y} (Cartesian)
         std::vector<std::vector<boardState>> board;
