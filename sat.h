@@ -10,6 +10,9 @@ class SATExpr {
         int dimX;
         int dimY;
 
+        // store pointer to board
+        Board* board;
+
         // Variable mapping uses row-major ordering,
         // board[ii][jj] => Var(ii + jj*dimX)
 

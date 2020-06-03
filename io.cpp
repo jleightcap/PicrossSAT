@@ -54,29 +54,6 @@ parse(std::string raw)
 
 
 
-// Convert the board representation into a string.
-std::string
-boardString(std::vector<std::vector<boardState>> *board)
-{
-    std::string boardString = "";
-    for (size_t ii = 0; ii < board->size(); ii++) {
-        for (size_t jj = 0; jj < board->size(); jj++) {
-            switch((*board)[ii][jj]) {
-                case UNKNOWN:
-                    boardString.append(" "); break;
-                case FALSE:
-                    boardString.append("x"); break;
-                case TRUE:
-                    boardString.append("█"); break;
-            }
-        }
-        boardString.append("\n");
-    }
-    return boardString;
-}
-
-
-
 // Write input string to file.
 void
 write_file(std::string text, std::string filename)

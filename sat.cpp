@@ -19,10 +19,11 @@ SATExpr::~SATExpr()
 
 
 
-SATExpr::SATExpr(Board* b)
+SATExpr::SATExpr(Board* b):
+    dimX(b->getDimX()),
+    dimY(b->getDimY()),
+    board(b)
 {
-    dimX = b->getDimX();
-    dimY = b->getDimY();
     const auto rowRestricts = *b->getRowVec();
     const auto colRestricts = *b->getColumnVec();
 
@@ -259,13 +260,15 @@ SATExpr::solve()
 
     auto sat = solver.solve();
     if (sat) {
-        std::clog << " SAT \n=====\n";
+        std::clog << "\n===SAT===\n";
         for (int ii = 0; ii < dimX; ii++) {
-            for (int jj = 0; jj < dimY; jj++)
-                std::clog << (solver.modelValue(ii + dimX*jj) == l_True);
-            std::clog << std::endl;
+            for (int jj = 0; jj < dimY; jj++) {
+                // convert solver bool to BoardState
+                bool state = solver.modelValue(ii + dimX*jj) == l_True;
+                (*board->getBoard())[ii][jj] = (state ? TRUE : FALSE);
+            }
         }
     } else {
-        std::clog << "UNSAT\n";
+        std::clog << "\n===UNSAT===\n";
     }
 }

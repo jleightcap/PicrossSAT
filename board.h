@@ -43,6 +43,25 @@ class Board {
         auto getColumnVec() { return colVecs; }
 
         void setBoard(boardState bs, int ii, int jj) { board[ii][jj] = bs; }
+
+        // Convert the board representation into a string.
+        std::string boardString() {
+            std::string boardString = "";
+            for (size_t ii = 0; ii < board.size(); ii++) {
+                for (size_t jj = 0; jj < board.size(); jj++) {
+                    switch((board)[ii][jj]) {
+                        case UNKNOWN:
+                            boardString.append(" "); break;
+                        case FALSE:
+                            boardString.append("x"); break;
+                        case TRUE:
+                            boardString.append("█"); break;
+                    }
+                }
+                boardString.append("\n");
+            }
+            return boardString;
+        }
 };
 
 #endif
