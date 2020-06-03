@@ -87,7 +87,13 @@ SATExpr::SATExpr(Board* b):
         dnfVec.growTo(dnfVec.size() + 1);
         permuteDNF.moveTo(dnfVec.last());
     }
+}
 
+
+
+void
+SATExpr::printDNF()
+{
     std::clog << "\n===DNF===\n";
     for (int ii = 0; ii < dnfVec.size(); ii++) {
         for (int jj = 0; jj < dnfVec[ii].size(); jj++) {
@@ -95,6 +101,19 @@ SATExpr::SATExpr(Board* b):
                 std::clog << dnfVec[ii][jj][kk].x << " ";
             std::clog << std::endl;
         }
+        std::clog << std::endl;
+    }
+}
+
+
+void
+SATExpr::printCNF()
+{
+
+    std::clog << "\n===CNF===\n";
+    for (auto& nn : cnfVec) {
+        for (auto& mm : nn)
+            std::clog << mm.x << " ";
         std::clog << std::endl;
     }
 }
@@ -234,12 +253,6 @@ SATExpr::cnf()
         }
     }
 
-    std::clog << "\n===CNF===\n";
-    for (auto& nn : cnfVec) {
-        for (auto& mm : nn)
-            std::clog << mm.x << " ";
-        std::clog << std::endl;
-    }
 }
 
 
@@ -260,7 +273,7 @@ SATExpr::solve()
 
     auto sat = solver.solve();
     if (sat) {
-        std::clog << "\n===SAT===\n";
+        std::clog << "===SAT===\n";
         for (int ii = 0; ii < dimX; ii++) {
             for (int jj = 0; jj < dimY; jj++) {
                 // convert solver bool to BoardState

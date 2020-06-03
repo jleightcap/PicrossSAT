@@ -40,6 +40,9 @@ class SATExpr {
 
         auto getDNF() { return &dnfVec; }
         auto getCNF() { return &cnfVec; }
+
+        void printDNF();
+        void printCNF();
 };
 
 
